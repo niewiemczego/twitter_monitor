@@ -1,0 +1,2 @@
+discord_webhook==0.14.0
+tweepy==4.4.0
