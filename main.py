@@ -50,7 +50,6 @@ class TwitterMonitor:
         while 1:
             for index, account in enumerate(self.user_accounts.items()):
                 new_tweet = await self.account_data(account[0])
-                print(f"new_tweet: {new_tweet}")
                 if new_tweet != None:
                     send_webhook(self.settings_data["Settings"]["webhook_url"], new_tweet)
                 await asyncio.sleep(1.1)  # sleeping for 1.1 sec to avoid getting rate limited
