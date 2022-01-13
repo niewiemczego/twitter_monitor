@@ -1,4 +1,5 @@
 # twitter_monitor
+Tested using python 3.9.4
 
 ## Installation
 
