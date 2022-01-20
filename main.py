@@ -3,6 +3,7 @@ import asyncio
 import platform
 from read_settings import read_settings
 from webhook import send_webhook
+import json
 
 if platform.system() == "Windows":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -11,8 +12,7 @@ class TwitterMonitor:
     def __init__(self):
         self.settings_data = read_settings()
         self.user_accounts = {  # edit account inside dict
-            "niewiemczego": None, 
-            "sajm0neq": None
+            "niewiemczego": None
         }
 
     async def account_data(self, account_name: str):
@@ -21,6 +21,7 @@ class TwitterMonitor:
             auth.set_access_token(key=self.settings_data["Settings"]["access_token"], secret=self.settings_data["Settings"]["access_token_secret"])
             api = tweepy.API(auth)
             public_tweets = api.user_timeline(screen_name=account_name, tweet_mode="extended", exclude_replies="true")
+            # print(json.dumps(public_tweets[0]._json)) <-- u can uncomment this to see the whole tweetdata
 
             if len(public_tweets) > 0:
                 data = {}
@@ -32,7 +33,16 @@ class TwitterMonitor:
                 data["user_profile_image_url_https"] = public_tweets[0].user.profile_image_url_https
                 data["user_followers_count"] = public_tweets[0].user.followers_count
                 data["user_friends_count"] = public_tweets[0].user.friends_count
-
+                if len(public_tweets[0].entities['urls']) > 0:
+                    data["url"] = [list(public_tweets[0].entities['urls'][i].values())[0] for i in range(len(public_tweets[0].entities['urls']))]  # it takes all urls in tweet and put it to list
+                else:
+                    data["url"] = []
+                try:
+                    if 'media' in public_tweets[0].extended_entities:
+                        data['images'] = [image['media_url'] for image in public_tweets[0].extended_entities['media']]  # it takes all images in tweet and put it to list
+                except AttributeError:
+                    data['images'] = []
+                
                 if self.user_accounts[account_name] != None:
                     if self.user_accounts[account_name] != data["tweet_id"]:
                         self.user_accounts[account_name] = data["tweet_id"]
