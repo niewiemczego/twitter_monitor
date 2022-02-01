@@ -1,7 +1,7 @@
 # twitter_monitor
 Tested using python 3.9.4
 
-Drop ⭐️ If you find it useful.
+Drop ⭐️ If you find it useful
 
 ## Installation
 
